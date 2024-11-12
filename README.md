@@ -1,10 +1,7 @@
 # ST
 Series de Tiempo. R. Datos.
 <<<<<<< HEAD
-ljdsldjl
-lknwelnfkbfks
-hkugjf
-lnkfnv
+
 =======
 
 Repositorio para la clase de series de tiempo. 
