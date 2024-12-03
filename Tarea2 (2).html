@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<hr />
+<p>title: &quot;TAREA2&quot; format: html editor: visual ---</p>
+<h2>Serie con estacionalidad y tendencia:</h2>
+<p><code>{r} #| message: false library(tidyverse) library(tsibble) library(feasts) library(fable) library(tsibbledata) library(fpp3) library(plotly)</code></p>
+<p><code>{r} aus_production|&gt;   autoplot(Tobacco) aus_production</code></p>
+<p><code>{r} rp &lt;- aus_production %&gt;% filter(year(Quarter) &gt;= 1980) tobacco_train &lt;- rp %&gt;% filter(year(Quarter) &lt;= 2003) tobacco_train %&gt;% autoplot(Tobacco)</code></p>
+<p><code>{r} #| message: false tobacco_train |&gt;    model(stl = STL(Tobacco, robust = TRUE)) |&gt;    components() |&gt;    autoplot() |&gt;    ggplotly()</code></p>
+<p><code>{r} tobacco_train |&gt;    autoplot(log(Tobacco)) +   ggtitle(&quot;Log of tabaco&quot;)</code></p>
+<p>```{r} lm&lt;-tobacco_train|&gt; features(Tobacco,
+features=guerrero)</p>
+<p>tobacco<em>train |&gt; autoplot(box</em>cox(Tobacco, lambda=lm))</p>
+<p>lm</p>
+<p>rp|&gt; autoplot(Tobacco) ```</p>
+<p><code>{r} tobacco_train|&gt;   gg_season(Tobacco)</code></p>
+<p>```{r} dcmp &lt;- tobacco<em>train |&gt; model(
+STL((box</em>cox(Tobacco, lambda=lm)), robust = TRUE) )</p>
+<p>dcmp |&gt; components() |&gt; autoplot() ```</p>
+<p>```{r} lm&lt;-tobacco_train|&gt; features(Tobacco,
+features=guerrero)</p>
+<p>tobaco<em>fit &lt;- tobacco</em>train |&gt; model( Drift = RW(Tobacco
+~ drift()), Drift<em>bc = RW(box</em>cox(Tobacco, lambda = lm) ~
+drift()), ETS<em>mam = ETS(box</em>cox(Tobacco, lambda = lm) ~
+error(&quot;M&quot;) + trend(&quot;A&quot;) + season(&quot;M&quot;), opt<em>crit = &quot;lik&quot;), ETS</em>AAA
+= ETS(box<em>cox(Tobacco, lambda = lm) ~ error(&quot;A&quot;) + trend(&quot;A&quot;) +
+season(&quot;A&quot;), opt</em>crit = &quot;lik&quot;) ) tobaco_fit ```</p>
+<p><code>{r} tobaco_fit |&gt;    select(ETS_mam) |&gt;    report()</code></p>
+<p>```{r}</p>
+<p>accuracy(tobaco_fit) |&gt; arrange(MAPE) ```</p>
+<p>```{r}</p>
+<h1>| warning: false</h1>
+<p>tobaco<em>aug &lt;- tobaco</em>fit |&gt; augment()</p>
+<p>tobaco_aug</p>
+<p>tobacco<em>train |&gt; autoplot(Tobacco, size = 1) +
+autolayer(tobaco</em>aug, .fitted, size = 1) + facet_wrap(~.model, ncol
+= 2) + theme(legend.position = &quot;none&quot;) ```</p>
+<p>```{r}</p>
+<h1>| warning: true</h1>
+<p>tobacco<em>fc &lt;- tobaco</em>fit |&gt; forecast(h = 10)
+tobacco_fc</p>
+<p>tobacco_fc |&gt; autoplot(rp, level = NULL)</p>
+<p>tobacco<em>fc |&gt; autoplot(rp |&gt; filter</em>index(&quot;1980 Q1&quot; ~
+.), level = NULL, size = 1)</p>
+<p>tobacco<em>fc |&gt; autoplot(rp |&gt; filter</em>index(&quot;1980 Q1&quot; ~
+.), size = 1) + facet_wrap(~ .model, ncol = 2)</p>
+<p>tobacco_fc |&gt; accuracy(rp) |&gt; arrange(MAPE) ```</p>
+<h2>Serie sin estacionalidad pero con tendencia:</h2>
+<p>```{r} global_economy</p>
+<p>mx<em>economy &lt;- global</em>economy %&gt;% filter(Country ==
+&quot;Mexico&quot;)</p>
+<p>mx<em>economy &lt;- subset(mx</em>economy, select = -Country)</p>
+<p>mx_economy %&gt;% autoplot(Imports) + ylab(&quot;Imports&quot;) + xlab(&quot;Year&quot;)
+```</p>
+<p>```{r} ge<em>mx &lt;- mx</em>economy %&gt;% filter(Year &gt;= 1960)
+ge<em>train &lt;- ge</em>mx %&gt;% filter(Year &lt;= 2005) ge_train
+%&gt;% autoplot(Imports)</p>
+<p>```</p>
+<p><code>{r} #| message: false ge_train |&gt;    model(stl = STL(Imports, robust = TRUE)) |&gt;    components() |&gt;    autoplot()</code></p>
+<p>Transformación boxcox:</p>
+<p>```{r} bx<em>mx&lt;-ge</em>train|&gt; features(Imports,
+features=guerrero)</p>
+<p>bx_mx</p>
+<p>ge<em>train |&gt; autoplot(box</em>cox(Imports, lambda=bx_mx))
+```</p>
+<p>Descomposición de la serie desestacionalizada:</p>
+<p>```{r} dcmp<em>gemx &lt;- ge</em>train |&gt; model(
+STL((box<em>cox(Imports, lambda=bx</em>mx)), robust = TRUE) )</p>
+<p>dcmp_gemx |&gt; components() |&gt; autoplot() ```</p>
+<p>Suavización exp. simple:</p>
+<p>```{r} ge<em>fit &lt;- ge</em>train |&gt; model( Drift = RW(Imports ~
+drift()), Drift<em>bc = RW(box</em>cox(Imports, lambda = bx<em>mx) ~
+drift()), ETS</em>mam = ETS(box<em>cox(Imports, lambda = bx</em>mx) ~
+error(&quot;M&quot;) + trend(&quot;A&quot;) + season(&quot;M&quot;), opt<em>crit = &quot;lik&quot;), ETS</em>AAA
+= ETS(box<em>cox(Imports, lambda = bx</em>mx) ~ error(&quot;A&quot;) + trend(&quot;A&quot;)
++ season(&quot;A&quot;), opt_crit = &quot;lik&quot;) )</p>
+<p>ge<em>fit &lt;- ge</em>train %&gt;% model( Mean = MEAN(Imports),
+<code>Naïve</code> = NAIVE(Imports), Drift = RW(Imports ~ drift()) )</p>
+<p>ge<em>fc &lt;- ge</em>fit %&gt;% forecast(h = 5)</p>
+<p>ge_fc</p>
+<p>ge<em>fc %&gt;% autoplot(filter(mx</em>economy, Year &gt;= 1960),
+level = NULL) + xlab(&quot;Year&quot;) + ylab(&quot;Megalitres&quot;) + ggtitle(&quot;Forecasts
+for quarterly beer production&quot;) +
+guides(colour=guide_legend(title=&quot;Forecast&quot;)) ```</p>
+<p>Tendencia lineal:</p>
+<p>```{r} fit &lt;- mx_economy %&gt;% model(AAN = ETS(Imports ~
+error(&quot;A&quot;) + trend(&quot;A&quot;) + season(&quot;N&quot;)), Drift = RW(Imports ~
+drift()))</p>
+<p>fc &lt;- fit %&gt;% forecast(h = 5)</p>
+<p>fc %&gt;% autoplot(mx<em>economy %&gt;% filter</em>index(&quot;2000&quot;~.),
+level = NULL) ```</p>
+<p><code>{r} fit |&gt;    select(AAN) |&gt;    report()</code></p>
+<p><code>{r} accuracy(fit) |&gt;    arrange(MAPE)</code></p>
+<p><em>EXTRA</em></p>
+<p>```{r} fit %&gt;% glance()</p>
+<p>```</p>
+<p>Tendencia amortiguada, extra también:</p>
+<p><code>{r} mx_economy %&gt;%   model(     `Holt` = ETS(Imports ~ error(&quot;A&quot;) + trend(&quot;A&quot;)),     `Damped Holt` = ETS(Imports ~ error(&quot;A&quot;) + trend(&quot;Ad&quot;))   ) %&gt;%   forecast(h = &quot;10 years&quot;) %&gt;%   autoplot(mx_economy, level = NULL) +   ggtitle(&quot;Forecasts from Holt&#39;s method&quot;) + xlab(&quot;Year&quot;) +   ylab(&quot;Population of Australia (millions)&quot;) +   guides(colour = guide_legend(title = &quot;Forecast&quot;))</code></p>
+<p>Errores del pronóstico:</p>
+<p><code>{r} accuracy(ge_fc, ge_mx)</code></p>
+<p>Se puede observar que el modelo que tiene menor error de predicción
+es Naive (RMSE, MAE, MAPE)</p>
+<p><code>{r} ge_fc %&gt;%   filter(.model == &quot;Naïve&quot;) %&gt;%    autoplot(filter(mx_economy, Year &gt;= 1960)) +   xlab(&quot;Year&quot;) + ylab(&quot;Megalitres&quot;) +   ggtitle(&quot;Forecast for quarterly beer production using the Damped Holt Winters method&quot;) +   guides(colour=guide_legend(title=&quot;Forecast&quot;))</code></p>

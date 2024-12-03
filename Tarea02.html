@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.546">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>TAREA2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Tarea02_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Tarea02_files/libs/quarto-html/quarto.js"></script>
+<script src="Tarea02_files/libs/quarto-html/popper.min.js"></script>
+<script src="Tarea02_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Tarea02_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Tarea02_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Tarea02_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Tarea02_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Tarea02_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Tarea02_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="Tarea02_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="Tarea02_files/libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="Tarea02_files/libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="Tarea02_files/libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="Tarea02_files/libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="Tarea02_files/libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="Tarea02_files/libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="Tarea02_files/libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">TAREA2</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="serie-con-estacionalidad-y-tendencia" class="level2">
+<h2 class="anchored" data-anchor-id="serie-con-estacionalidad-y-tendencia">Serie con estacionalidad y tendencia:</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tsibble)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(feasts)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fable)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tsibbledata)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fpp3)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>aus_production<span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(Tobacco)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 24 rows containing missing values (`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>aus_production</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 218 x 7 [1Q]
+   Quarter  Beer Tobacco Bricks Cement Electricity   Gas
+     &lt;qtr&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;
+ 1 1956 Q1   284    5225    189    465        3923     5
+ 2 1956 Q2   213    5178    204    532        4436     6
+ 3 1956 Q3   227    5297    208    561        4806     7
+ 4 1956 Q4   308    5681    197    570        4418     6
+ 5 1957 Q1   262    5577    187    529        4339     5
+ 6 1957 Q2   228    5651    214    604        4811     7
+ 7 1957 Q3   236    5317    227    603        5259     7
+ 8 1957 Q4   320    6152    222    582        4735     6
+ 9 1958 Q1   272    5758    199    554        4608     5
+10 1958 Q2   233    5641    229    620        5196     7
+# ℹ 208 more rows</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rp <span class="ot">&lt;-</span> aus_production <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">year</span>(Quarter) <span class="sc">&gt;=</span> <span class="dv">1980</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>tobacco_train <span class="ot">&lt;-</span> rp <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">year</span>(Quarter) <span class="sc">&lt;=</span> <span class="dv">2003</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>tobacco_train <span class="sc">%&gt;%</span> <span class="fu">autoplot</span>(Tobacco)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>tobacco_train <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(<span class="at">stl =</span> <span class="fu">STL</span>(Tobacco, <span class="at">robust =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">components</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplotly</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-3109ee6f37393cc2f4c9" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-3109ee6f37393cc2f4c9">{"x":{"data":[{"x":[3652,3743,3834,3926,4018,4108,4199,4291,4383,4473,4564,4656,4748,4838,4929,5021,5113,5204,5295,5387,5479,5569,5660,5752,5844,5934,6025,6117,6209,6299,6390,6482,6574,6665,6756,6848,6940,7030,7121,7213,7305,7395,7486,7578,7670,7760,7851,7943,8035,8126,8217,8309,8401,8491,8582,8674,8766,8856,8947,9039,9131,9221,9312,9404,9496,9587,9678,9770,9862,9952,10043,10135,10227,10317,10408,10500,10592,10682,10773,10865,10957,11048,11139,11231,11323,11413,11504,11596,11688,11778,11869,11961,12053,12143,12234,12326],"y":[6794,8168,8097,7820,6437,7995,8238,8026,6697,7749,8043,7469,6559,7852,7449,6975,6631,6928,6542,6819,6033,7678,7341,6829,5733,7465,7780,7234,5765,7476,6742,7217,6034,7389,7077,6837,6051,7193,6639,7060,6562,7063,7374,6563,6202,6694,6748,6160,5777,5853,6416,5825,5724,6036,6570,5675,5311,5717,7000,6085,4714,3939,6137,4739,4275,5239,6293,5575,4802,5523,5708,4821,4919,5809,5904,4555,5198,5388,5142,5517,5169,4860,5185,4763,4217,4959,5196,4522,3843,4806,5280,4709,4362,5210,5258,4526],"text":["Quarter: 1980 Q1<br />.val:  6794.000000","Quarter: 1980 Q2<br />.val:  8168.000000","Quarter: 1980 Q3<br />.val:  8097.000000","Quarter: 1980 Q4<br />.val:  7820.000000","Quarter: 1981 Q1<br />.val:  6437.000000","Quarter: 1981 Q2<br />.val:  7995.000000","Quarter: 1981 Q3<br />.val:  8238.000000","Quarter: 1981 Q4<br />.val:  8026.000000","Quarter: 1982 Q1<br />.val:  6697.000000","Quarter: 1982 Q2<br />.val:  7749.000000","Quarter: 1982 Q3<br />.val:  8043.000000","Quarter: 1982 Q4<br />.val:  7469.000000","Quarter: 1983 Q1<br />.val:  6559.000000","Quarter: 1983 Q2<br />.val:  7852.000000","Quarter: 1983 Q3<br />.val:  7449.000000","Quarter: 1983 Q4<br />.val:  6975.000000","Quarter: 1984 Q1<br />.val:  6631.000000","Quarter: 1984 Q2<br />.val:  6928.000000","Quarter: 1984 Q3<br />.val:  6542.000000","Quarter: 1984 Q4<br />.val:  6819.000000","Quarter: 1985 Q1<br />.val:  6033.000000","Quarter: 1985 Q2<br />.val:  7678.000000","Quarter: 1985 Q3<br />.val:  7341.000000","Quarter: 1985 Q4<br />.val:  6829.000000","Quarter: 1986 Q1<br />.val:  5733.000000","Quarter: 1986 Q2<br />.val:  7465.000000","Quarter: 1986 Q3<br />.val:  7780.000000","Quarter: 1986 Q4<br />.val:  7234.000000","Quarter: 1987 Q1<br />.val:  5765.000000","Quarter: 1987 Q2<br />.val:  7476.000000","Quarter: 1987 Q3<br />.val:  6742.000000","Quarter: 1987 Q4<br />.val:  7217.000000","Quarter: 1988 Q1<br />.val:  6034.000000","Quarter: 1988 Q2<br />.val:  7389.000000","Quarter: 1988 Q3<br />.val:  7077.000000","Quarter: 1988 Q4<br />.val:  6837.000000","Quarter: 1989 Q1<br />.val:  6051.000000","Quarter: 1989 Q2<br />.val:  7193.000000","Quarter: 1989 Q3<br />.val:  6639.000000","Quarter: 1989 Q4<br />.val:  7060.000000","Quarter: 1990 Q1<br />.val:  6562.000000","Quarter: 1990 Q2<br />.val:  7063.000000","Quarter: 1990 Q3<br />.val:  7374.000000","Quarter: 1990 Q4<br />.val:  6563.000000","Quarter: 1991 Q1<br />.val:  6202.000000","Quarter: 1991 Q2<br />.val:  6694.000000","Quarter: 1991 Q3<br />.val:  6748.000000","Quarter: 1991 Q4<br />.val:  6160.000000","Quarter: 1992 Q1<br />.val:  5777.000000","Quarter: 1992 Q2<br />.val:  5853.000000","Quarter: 1992 Q3<br />.val:  6416.000000","Quarter: 1992 Q4<br />.val:  5825.000000","Quarter: 1993 Q1<br />.val:  5724.000000","Quarter: 1993 Q2<br />.val:  6036.000000","Quarter: 1993 Q3<br />.val:  6570.000000","Quarter: 1993 Q4<br />.val:  5675.000000","Quarter: 1994 Q1<br />.val:  5311.000000","Quarter: 1994 Q2<br />.val:  5717.000000","Quarter: 1994 Q3<br />.val:  7000.000000","Quarter: 1994 Q4<br />.val:  6085.000000","Quarter: 1995 Q1<br />.val:  4714.000000","Quarter: 1995 Q2<br />.val:  3939.000000","Quarter: 1995 Q3<br />.val:  6137.000000","Quarter: 1995 Q4<br />.val:  4739.000000","Quarter: 1996 Q1<br />.val:  4275.000000","Quarter: 1996 Q2<br />.val:  5239.000000","Quarter: 1996 Q3<br />.val:  6293.000000","Quarter: 1996 Q4<br />.val:  5575.000000","Quarter: 1997 Q1<br />.val:  4802.000000","Quarter: 1997 Q2<br />.val:  5523.000000","Quarter: 1997 Q3<br />.val:  5708.000000","Quarter: 1997 Q4<br />.val:  4821.000000","Quarter: 1998 Q1<br />.val:  4919.000000","Quarter: 1998 Q2<br />.val:  5809.000000","Quarter: 1998 Q3<br />.val:  5904.000000","Quarter: 1998 Q4<br />.val:  4555.000000","Quarter: 1999 Q1<br />.val:  5198.000000","Quarter: 1999 Q2<br />.val:  5388.000000","Quarter: 1999 Q3<br />.val:  5142.000000","Quarter: 1999 Q4<br />.val:  5517.000000","Quarter: 2000 Q1<br />.val:  5169.000000","Quarter: 2000 Q2<br />.val:  4860.000000","Quarter: 2000 Q3<br />.val:  5185.000000","Quarter: 2000 Q4<br />.val:  4763.000000","Quarter: 2001 Q1<br />.val:  4217.000000","Quarter: 2001 Q2<br />.val:  4959.000000","Quarter: 2001 Q3<br />.val:  5196.000000","Quarter: 2001 Q4<br />.val:  4522.000000","Quarter: 2002 Q1<br />.val:  3843.000000","Quarter: 2002 Q2<br />.val:  4806.000000","Quarter: 2002 Q3<br />.val:  5280.000000","Quarter: 2002 Q4<br />.val:  4709.000000","Quarter: 2003 Q1<br />.val:  4362.000000","Quarter: 2003 Q2<br />.val:  5210.000000","Quarter: 2003 Q3<br />.val:  5258.000000","Quarter: 2003 Q4<br />.val:  4526.000000"],"type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[3652,3743,3834,3926,4018,4108,4199,4291,4383,4473,4564,4656,4748,4838,4929,5021,5113,5204,5295,5387,5479,5569,5660,5752,5844,5934,6025,6117,6209,6299,6390,6482,6574,6665,6756,6848,6940,7030,7121,7213,7305,7395,7486,7578,7670,7760,7851,7943,8035,8126,8217,8309,8401,8491,8582,8674,8766,8856,8947,9039,9131,9221,9312,9404,9496,9587,9678,9770,9862,9952,10043,10135,10227,10317,10408,10500,10592,10682,10773,10865,10957,11048,11139,11231,11323,11413,11504,11596,11688,11778,11869,11961,12053,12143,12234,12326],"y":[7794.528128223049,7735.8769742865179,7674.1392004857271,7611.8133500049726,7594.5791475829847,7639.0006558868126,7716.5601338291035,7736.0904828619387,7663.0076000987929,7565.6931191013937,7482.0684708582812,7473.2419388968992,7412.1897599197991,7283.6438232920082,7088.4955299461499,6860.9780484136918,6641.8975334016541,6505.0627027332321,6493.8114404459593,6693.2922228687921,6897.1094437146394,6985.2892495038541,6937.756823602127,6851.9816467369365,6848.7917171634354,6960.1531381371733,7029.700973148565,7036.4430961807575,6976.2331144135524,6950.7129185213616,6979.902760182249,6994.672522723482,6974.2289947336612,6883.8452998941502,6828.9081725410442,6800.5948374511272,6824.7781555743204,6897.1857137330853,6985.8355720315094,7049.4946192521365,7048.7719161713294,6957.9850094253661,6841.5608858233509,6754.6899775312477,6641.4942578458231,6509.7909362859764,6385.2009564167338,6242.7892391051791,6102.2400263965037,5996.6095844858346,5940.0296877055844,5979.024590955717,6025.9873413021996,6019.2341795618513,5944.4432870040064,5859.3438858791378,5856.1264811612891,5966.702283545932,6116.3000807831713,6300.3180262014785,5964.1203465808076,5688.0501686346506,5419.963483617661,5134.0896240217053,5105.4506376829613,5236.9734323286348,5432.0036018595038,5512.5509544032893,5473.4676568070681,5314.6535788741512,5235.8238421385431,5272.3366942185694,5361.4851175900785,5471.4322490646437,5537.9013550473564,5523.6944979567616,5490.3994374831709,5512.2802134348622,5525.3038216941795,5507.6243162588626,5352.9356823609141,5076.0115498045379,4849.0277428174049,4770.7634798658228,4786.316023758558,4756.3910576371436,4687.8668523871656,4612.4170560559151,4601.7566376982359,4642.8779416464931,4736.0547908185481,4834.7732322574366,4884.1787627053327,4832.0211018121308,4778.1454851183971,4712.5787148793079],"text":["Quarter: 1980 Q1<br />.val:  7794.528128","Quarter: 1980 Q2<br />.val:  7735.876974","Quarter: 1980 Q3<br />.val:  7674.139200","Quarter: 1980 Q4<br />.val:  7611.813350","Quarter: 1981 Q1<br />.val:  7594.579148","Quarter: 1981 Q2<br />.val:  7639.000656","Quarter: 1981 Q3<br />.val:  7716.560134","Quarter: 1981 Q4<br />.val:  7736.090483","Quarter: 1982 Q1<br />.val:  7663.007600","Quarter: 1982 Q2<br />.val:  7565.693119","Quarter: 1982 Q3<br />.val:  7482.068471","Quarter: 1982 Q4<br />.val:  7473.241939","Quarter: 1983 Q1<br />.val:  7412.189760","Quarter: 1983 Q2<br />.val:  7283.643823","Quarter: 1983 Q3<br />.val:  7088.495530","Quarter: 1983 Q4<br />.val:  6860.978048","Quarter: 1984 Q1<br />.val:  6641.897533","Quarter: 1984 Q2<br />.val:  6505.062703","Quarter: 1984 Q3<br />.val:  6493.811440","Quarter: 1984 Q4<br />.val:  6693.292223","Quarter: 1985 Q1<br />.val:  6897.109444","Quarter: 1985 Q2<br />.val:  6985.289250","Quarter: 1985 Q3<br />.val:  6937.756824","Quarter: 1985 Q4<br />.val:  6851.981647","Quarter: 1986 Q1<br />.val:  6848.791717","Quarter: 1986 Q2<br />.val:  6960.153138","Quarter: 1986 Q3<br />.val:  7029.700973","Quarter: 1986 Q4<br />.val:  7036.443096","Quarter: 1987 Q1<br />.val:  6976.233114","Quarter: 1987 Q2<br />.val:  6950.712919","Quarter: 1987 Q3<br />.val:  6979.902760","Quarter: 1987 Q4<br />.val:  6994.672523","Quarter: 1988 Q1<br />.val:  6974.228995","Quarter: 1988 Q2<br />.val:  6883.845300","Quarter: 1988 Q3<br />.val:  6828.908173","Quarter: 1988 Q4<br />.val:  6800.594837","Quarter: 1989 Q1<br />.val:  6824.778156","Quarter: 1989 Q2<br />.val:  6897.185714","Quarter: 1989 Q3<br />.val:  6985.835572","Quarter: 1989 Q4<br />.val:  7049.494619","Quarter: 1990 Q1<br />.val:  7048.771916","Quarter: 1990 Q2<br />.val:  6957.985009","Quarter: 1990 Q3<br />.val:  6841.560886","Quarter: 1990 Q4<br />.val:  6754.689978","Quarter: 1991 Q1<br />.val:  6641.494258","Quarter: 1991 Q2<br />.val:  6509.790936","Quarter: 1991 Q3<br />.val:  6385.200956","Quarter: 1991 Q4<br />.val:  6242.789239","Quarter: 1992 Q1<br />.val:  6102.240026","Quarter: 1992 Q2<br />.val:  5996.609584","Quarter: 1992 Q3<br />.val:  5940.029688","Quarter: 1992 Q4<br />.val:  5979.024591","Quarter: 1993 Q1<br />.val:  6025.987341","Quarter: 1993 Q2<br />.val:  6019.234180","Quarter: 1993 Q3<br />.val:  5944.443287","Quarter: 1993 Q4<br />.val:  5859.343886","Quarter: 1994 Q1<br />.val:  5856.126481","Quarter: 1994 Q2<br />.val:  5966.702284","Quarter: 1994 Q3<br />.val:  6116.300081","Quarter: 1994 Q4<br />.val:  6300.318026","Quarter: 1995 Q1<br />.val:  5964.120347","Quarter: 1995 Q2<br />.val:  5688.050169","Quarter: 1995 Q3<br />.val:  5419.963484","Quarter: 1995 Q4<br />.val:  5134.089624","Quarter: 1996 Q1<br />.val:  5105.450638","Quarter: 1996 Q2<br />.val:  5236.973432","Quarter: 1996 Q3<br />.val:  5432.003602","Quarter: 1996 Q4<br />.val:  5512.550954","Quarter: 1997 Q1<br />.val:  5473.467657","Quarter: 1997 Q2<br />.val:  5314.653579","Quarter: 1997 Q3<br />.val:  5235.823842","Quarter: 1997 Q4<br />.val:  5272.336694","Quarter: 1998 Q1<br />.val:  5361.485118","Quarter: 1998 Q2<br />.val:  5471.432249","Quarter: 1998 Q3<br />.val:  5537.901355","Quarter: 1998 Q4<br />.val:  5523.694498","Quarter: 1999 Q1<br />.val:  5490.399437","Quarter: 1999 Q2<br />.val:  5512.280213","Quarter: 1999 Q3<br />.val:  5525.303822","Quarter: 1999 Q4<br />.val:  5507.624316","Quarter: 2000 Q1<br />.val:  5352.935682","Quarter: 2000 Q2<br />.val:  5076.011550","Quarter: 2000 Q3<br />.val:  4849.027743","Quarter: 2000 Q4<br />.val:  4770.763480","Quarter: 2001 Q1<br />.val:  4786.316024","Quarter: 2001 Q2<br />.val:  4756.391058","Quarter: 2001 Q3<br />.val:  4687.866852","Quarter: 2001 Q4<br />.val:  4612.417056","Quarter: 2002 Q1<br />.val:  4601.756638","Quarter: 2002 Q2<br />.val:  4642.877942","Quarter: 2002 Q3<br />.val:  4736.054791","Quarter: 2002 Q4<br />.val:  4834.773232","Quarter: 2003 Q1<br />.val:  4884.178763","Quarter: 2003 Q2<br />.val:  4832.021102","Quarter: 2003 Q3<br />.val:  4778.145485","Quarter: 2003 Q4<br />.val:  4712.578715"],"type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[3652,3743,3834,3926,4018,4108,4199,4291,4383,4473,4564,4656,4748,4838,4929,5021,5113,5204,5295,5387,5479,5569,5660,5752,5844,5934,6025,6117,6209,6299,6390,6482,6574,6665,6756,6848,6940,7030,7121,7213,7305,7395,7486,7578,7670,7760,7851,7943,8035,8126,8217,8309,8401,8491,8582,8674,8766,8856,8947,9039,9131,9221,9312,9404,9496,9587,9678,9770,9862,9952,10043,10135,10227,10317,10408,10500,10592,10682,10773,10865,10957,11048,11139,11231,11323,11413,11504,11596,11688,11778,11869,11961,12053,12143,12234,12326],"y":[-996.46604969989369,444.85287590940959,416.51617806571215,133.34286186726291,-996.44096758252579,449.79025993868521,413.32497162131256,131.69572829468495,-996.57362189958133,454.41300912244043,409.62290905575179,129.43895560863137,-994.70945957589049,463.89171677031311,401.82347714675524,123.54335406385749,-992.25769515347804,473.23485049587242,393.16525813754555,116.7071322908632,-976.44396447017891,487.16990533543094,365.01109857234326,108.7851938354725,-958.49973638117183,501.28138760033806,335.13311605266233,98.076314309062795,-896.25137856578169,444.87657631115911,360.17857386689127,66.008208033627511,-834.96456433072763,386.71721278807672,382.65113341304402,31.475203073152223,-730.61805808613076,293.35205289643613,409.20124295306158,-14.887790306273754,-621.07928515602771,204.78484603928669,439.854842422422,-58.642194564301377,-546.92142390864569,119.34561089877445,506.85188308233631,-101.23204798315531,-477.18788493520816,34.401311853051737,579.37864743664852,-135.3321066837027,-484.67901816241533,13.58515893561804,624.30223342693716,-144.92311485527796,-494.85362251697865,-10.003655539015819,666.60951856146585,-157.27006175958473,-517.93045522194188,15.690622817238555,664.69108681639216,-157.3777367347187,-542.42012855243308,39.083851961792107,659.62681951242644,-160.35898268364406,-528.36315094031011,56.186195609064349,599.0047916428515,-132.23799686388767,-511.90156839720692,74.825433157880028,539.3848393122064,-103.65261334036744,-517.57473451432838,98.831556109829506,520.17712848722715,-104.80115292038658,-523.46114755060239,123.40441969670806,501.80428670546456,-105.21259613529955,-521.36671886794454,128.7512075306409,495.63775995480648,-104.89996173385684,-519.84341736491774,133.74773794944795,489.48892421957879,-104.26821993553183,-519.81898876842399,136.73132040330964,486.56695693954504,-103.82133681758978],"text":["Quarter: 1980 Q1<br />.val:  -996.466050","Quarter: 1980 Q2<br />.val:   444.852876","Quarter: 1980 Q3<br />.val:   416.516178","Quarter: 1980 Q4<br />.val:   133.342862","Quarter: 1981 Q1<br />.val:  -996.440968","Quarter: 1981 Q2<br />.val:   449.790260","Quarter: 1981 Q3<br />.val:   413.324972","Quarter: 1981 Q4<br />.val:   131.695728","Quarter: 1982 Q1<br />.val:  -996.573622","Quarter: 1982 Q2<br />.val:   454.413009","Quarter: 1982 Q3<br />.val:   409.622909","Quarter: 1982 Q4<br />.val:   129.438956","Quarter: 1983 Q1<br />.val:  -994.709460","Quarter: 1983 Q2<br />.val:   463.891717","Quarter: 1983 Q3<br />.val:   401.823477","Quarter: 1983 Q4<br />.val:   123.543354","Quarter: 1984 Q1<br />.val:  -992.257695","Quarter: 1984 Q2<br />.val:   473.234850","Quarter: 1984 Q3<br />.val:   393.165258","Quarter: 1984 Q4<br />.val:   116.707132","Quarter: 1985 Q1<br />.val:  -976.443964","Quarter: 1985 Q2<br />.val:   487.169905","Quarter: 1985 Q3<br />.val:   365.011099","Quarter: 1985 Q4<br />.val:   108.785194","Quarter: 1986 Q1<br />.val:  -958.499736","Quarter: 1986 Q2<br />.val:   501.281388","Quarter: 1986 Q3<br />.val:   335.133116","Quarter: 1986 Q4<br />.val:    98.076314","Quarter: 1987 Q1<br />.val:  -896.251379","Quarter: 1987 Q2<br />.val:   444.876576","Quarter: 1987 Q3<br />.val:   360.178574","Quarter: 1987 Q4<br />.val:    66.008208","Quarter: 1988 Q1<br />.val:  -834.964564","Quarter: 1988 Q2<br />.val:   386.717213","Quarter: 1988 Q3<br />.val:   382.651133","Quarter: 1988 Q4<br />.val:    31.475203","Quarter: 1989 Q1<br />.val:  -730.618058","Quarter: 1989 Q2<br />.val:   293.352053","Quarter: 1989 Q3<br />.val:   409.201243","Quarter: 1989 Q4<br />.val:   -14.887790","Quarter: 1990 Q1<br />.val:  -621.079285","Quarter: 1990 Q2<br />.val:   204.784846","Quarter: 1990 Q3<br />.val:   439.854842","Quarter: 1990 Q4<br />.val:   -58.642195","Quarter: 1991 Q1<br />.val:  -546.921424","Quarter: 1991 Q2<br />.val:   119.345611","Quarter: 1991 Q3<br />.val:   506.851883","Quarter: 1991 Q4<br />.val:  -101.232048","Quarter: 1992 Q1<br />.val:  -477.187885","Quarter: 1992 Q2<br />.val:    34.401312","Quarter: 1992 Q3<br />.val:   579.378647","Quarter: 1992 Q4<br />.val:  -135.332107","Quarter: 1993 Q1<br />.val:  -484.679018","Quarter: 1993 Q2<br />.val:    13.585159","Quarter: 1993 Q3<br />.val:   624.302233","Quarter: 1993 Q4<br />.val:  -144.923115","Quarter: 1994 Q1<br />.val:  -494.853623","Quarter: 1994 Q2<br />.val:   -10.003656","Quarter: 1994 Q3<br />.val:   666.609519","Quarter: 1994 Q4<br />.val:  -157.270062","Quarter: 1995 Q1<br />.val:  -517.930455","Quarter: 1995 Q2<br />.val:    15.690623","Quarter: 1995 Q3<br />.val:   664.691087","Quarter: 1995 Q4<br />.val:  -157.377737","Quarter: 1996 Q1<br />.val:  -542.420129","Quarter: 1996 Q2<br />.val:    39.083852","Quarter: 1996 Q3<br />.val:   659.626820","Quarter: 1996 Q4<br />.val:  -160.358983","Quarter: 1997 Q1<br />.val:  -528.363151","Quarter: 1997 Q2<br />.val:    56.186196","Quarter: 1997 Q3<br />.val:   599.004792","Quarter: 1997 Q4<br />.val:  -132.237997","Quarter: 1998 Q1<br />.val:  -511.901568","Quarter: 1998 Q2<br />.val:    74.825433","Quarter: 1998 Q3<br />.val:   539.384839","Quarter: 1998 Q4<br />.val:  -103.652613","Quarter: 1999 Q1<br />.val:  -517.574735","Quarter: 1999 Q2<br />.val:    98.831556","Quarter: 1999 Q3<br />.val:   520.177128","Quarter: 1999 Q4<br />.val:  -104.801153","Quarter: 2000 Q1<br />.val:  -523.461148","Quarter: 2000 Q2<br />.val:   123.404420","Quarter: 2000 Q3<br />.val:   501.804287","Quarter: 2000 Q4<br />.val:  -105.212596","Quarter: 2001 Q1<br />.val:  -521.366719","Quarter: 2001 Q2<br />.val:   128.751208","Quarter: 2001 Q3<br />.val:   495.637760","Quarter: 2001 Q4<br />.val:  -104.899962","Quarter: 2002 Q1<br />.val:  -519.843417","Quarter: 2002 Q2<br />.val:   133.747738","Quarter: 2002 Q3<br />.val:   489.488924","Quarter: 2002 Q4<br />.val:  -104.268220","Quarter: 2003 Q1<br />.val:  -519.818989","Quarter: 2003 Q2<br />.val:   136.731320","Quarter: 2003 Q3<br />.val:   486.566957","Quarter: 2003 Q4<br />.val:  -103.821337"],"type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y3","hoverinfo":"text","frame":null},{"x":[3652,3743,3834,3926,4018,4108,4199,4291,4383,4473,4564,4656,4748,4838,4929,5021,5113,5204,5295,5387,5479,5569,5660,5752,5844,5934,6025,6117,6209,6299,6390,6482,6574,6665,6756,6848,6940,7030,7121,7213,7305,7395,7486,7578,7670,7760,7851,7943,8035,8126,8217,8309,8401,8491,8582,8674,8766,8856,8947,9039,9131,9221,9312,9404,9496,9587,9678,9770,9862,9952,10043,10135,10227,10317,10408,10500,10592,10682,10773,10865,10957,11048,11139,11231,11323,11413,11504,11596,11688,11778,11869,11961,12053,12143,12234,12326],"y":[-4.0620785231549235,-12.729850195927611,6.3446214485611563,74.843788127764128,-161.13818000045922,-93.790915825497905,108.11489454958428,158.21378884337628,30.566021800788803,-271.10612822383428,151.30862008596705,-133.68089450553089,141.51969965609169,104.46445993767884,-41.31900709290494,-9.5214024775496,981.36016175182431,-50.297553229104778,-344.97669858350491,9.0006448403446484,112.33452075553942,205.54084516071453,38.232077825529814,-131.76684057240891,-157.29198078226364,3.5654742624883511,415.16591079877253,99.480589510179925,-314.98173584777032,80.410505167479641,-598.08133404914042,156.31926924289019,-105.26443040293361,118.43748731777305,-134.5593059540879,4.9299594757203522,-43.160097488189422,2.4622333704783159,-756.03681498457081,25.393171054137383,134.30736898469786,-99.769855464653119,92.584271754227302,-133.04778296694622,107.42716606282283,64.86345281524882,-144.05283949906971,18.442808877975949,151.94785853870417,-178.0108963388866,-103.40833514223323,-18.692484272014553,182.69167686021592,3.180661502530711,1.254479569056457,-39.420771023859743,-50.272858644310872,-239.6986280069159,217.09040065536283,-58.047964441893782,-732.18989135886568,-1764.740791451889,52.345429565946688,-237.71188728698689,-288.03050913052812,-37.057284290426651,201.36957862806958,222.80802828035485,-143.10450586675779,152.16022551678452,-126.82863378139427,-319.09869735468146,69.416450807128058,262.74231777747627,-173.28619435956261,-865.04188461639387,225.17529703115724,-223.11176954469192,-903.48095018140702,114.17683666152425,339.52546518968848,-339.41596950124585,-165.83202952286956,97.44911626947669,-47.949304890613348,73.857734832215101,12.495387658027539,14.482905677941744,-238.91322033331835,29.37432040405929,54.45628496187328,-21.50501232190436,-2.3597739369088231,241.24757778455933,-6.7124420579420985,-82.757378061718555],"text":["Quarter: 1980 Q1<br />.val:    -4.062079","Quarter: 1980 Q2<br />.val:   -12.729850","Quarter: 1980 Q3<br />.val:     6.344621","Quarter: 1980 Q4<br />.val:    74.843788","Quarter: 1981 Q1<br />.val:  -161.138180","Quarter: 1981 Q2<br />.val:   -93.790916","Quarter: 1981 Q3<br />.val:   108.114895","Quarter: 1981 Q4<br />.val:   158.213789","Quarter: 1982 Q1<br />.val:    30.566022","Quarter: 1982 Q2<br />.val:  -271.106128","Quarter: 1982 Q3<br />.val:   151.308620","Quarter: 1982 Q4<br />.val:  -133.680895","Quarter: 1983 Q1<br />.val:   141.519700","Quarter: 1983 Q2<br />.val:   104.464460","Quarter: 1983 Q3<br />.val:   -41.319007","Quarter: 1983 Q4<br />.val:    -9.521402","Quarter: 1984 Q1<br />.val:   981.360162","Quarter: 1984 Q2<br />.val:   -50.297553","Quarter: 1984 Q3<br />.val:  -344.976699","Quarter: 1984 Q4<br />.val:     9.000645","Quarter: 1985 Q1<br />.val:   112.334521","Quarter: 1985 Q2<br />.val:   205.540845","Quarter: 1985 Q3<br />.val:    38.232078","Quarter: 1985 Q4<br />.val:  -131.766841","Quarter: 1986 Q1<br />.val:  -157.291981","Quarter: 1986 Q2<br />.val:     3.565474","Quarter: 1986 Q3<br />.val:   415.165911","Quarter: 1986 Q4<br />.val:    99.480590","Quarter: 1987 Q1<br />.val:  -314.981736","Quarter: 1987 Q2<br />.val:    80.410505","Quarter: 1987 Q3<br />.val:  -598.081334","Quarter: 1987 Q4<br />.val:   156.319269","Quarter: 1988 Q1<br />.val:  -105.264430","Quarter: 1988 Q2<br />.val:   118.437487","Quarter: 1988 Q3<br />.val:  -134.559306","Quarter: 1988 Q4<br />.val:     4.929959","Quarter: 1989 Q1<br />.val:   -43.160097","Quarter: 1989 Q2<br />.val:     2.462233","Quarter: 1989 Q3<br />.val:  -756.036815","Quarter: 1989 Q4<br />.val:    25.393171","Quarter: 1990 Q1<br />.val:   134.307369","Quarter: 1990 Q2<br />.val:   -99.769855","Quarter: 1990 Q3<br />.val:    92.584272","Quarter: 1990 Q4<br />.val:  -133.047783","Quarter: 1991 Q1<br />.val:   107.427166","Quarter: 1991 Q2<br />.val:    64.863453","Quarter: 1991 Q3<br />.val:  -144.052839","Quarter: 1991 Q4<br />.val:    18.442809","Quarter: 1992 Q1<br />.val:   151.947859","Quarter: 1992 Q2<br />.val:  -178.010896","Quarter: 1992 Q3<br />.val:  -103.408335","Quarter: 1992 Q4<br />.val:   -18.692484","Quarter: 1993 Q1<br />.val:   182.691677","Quarter: 1993 Q2<br />.val:     3.180662","Quarter: 1993 Q3<br />.val:     1.254480","Quarter: 1993 Q4<br />.val:   -39.420771","Quarter: 1994 Q1<br />.val:   -50.272859","Quarter: 1994 Q2<br />.val:  -239.698628","Quarter: 1994 Q3<br />.val:   217.090401","Quarter: 1994 Q4<br />.val:   -58.047964","Quarter: 1995 Q1<br />.val:  -732.189891","Quarter: 1995 Q2<br />.val: -1764.740791","Quarter: 1995 Q3<br />.val:    52.345430","Quarter: 1995 Q4<br />.val:  -237.711887","Quarter: 1996 Q1<br />.val:  -288.030509","Quarter: 1996 Q2<br />.val:   -37.057284","Quarter: 1996 Q3<br />.val:   201.369579","Quarter: 1996 Q4<br />.val:   222.808028","Quarter: 1997 Q1<br />.val:  -143.104506","Quarter: 1997 Q2<br />.val:   152.160226","Quarter: 1997 Q3<br />.val:  -126.828634","Quarter: 1997 Q4<br />.val:  -319.098697","Quarter: 1998 Q1<br />.val:    69.416451","Quarter: 1998 Q2<br />.val:   262.742318","Quarter: 1998 Q3<br />.val:  -173.286194","Quarter: 1998 Q4<br />.val:  -865.041885","Quarter: 1999 Q1<br />.val:   225.175297","Quarter: 1999 Q2<br />.val:  -223.111770","Quarter: 1999 Q3<br />.val:  -903.480950","Quarter: 1999 Q4<br />.val:   114.176837","Quarter: 2000 Q1<br />.val:   339.525465","Quarter: 2000 Q2<br />.val:  -339.415970","Quarter: 2000 Q3<br />.val:  -165.832030","Quarter: 2000 Q4<br />.val:    97.449116","Quarter: 2001 Q1<br />.val:   -47.949305","Quarter: 2001 Q2<br />.val:    73.857735","Quarter: 2001 Q3<br />.val:    12.495388","Quarter: 2001 Q4<br />.val:    14.482906","Quarter: 2002 Q1<br />.val:  -238.913220","Quarter: 2002 Q2<br />.val:    29.374320","Quarter: 2002 Q3<br />.val:    54.456285","Quarter: 2002 Q4<br />.val:   -21.505012","Quarter: 2003 Q1<br />.val:    -2.359774","Quarter: 2003 Q2<br />.val:   241.247578","Quarter: 2003 Q3<br />.val:    -6.712442","Quarter: 2003 Q4<br />.val:   -82.757378"],"type":"scatter","mode":"lines","line":{"width":1.8897637795275593,"color":"rgba(0,0,0,1)","dash":"solid"},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y4","hoverinfo":"text","frame":null},{"x":[3468,3468,3560,3560,3468],"y":[5208.9084297694762,6872.0915702305238,6872.0915702305238,5208.9084297694762,5208.9084297694762],"text":"","type":"scatter","mode":"lines","line":{"width":1.2598425196850394,"color":"rgba(0,0,0,1)","dash":"solid"},"fill":"toself","fillcolor":"rgba(191,191,191,1)","hoveron":"fills","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[3468,3468,3560,3560,3468],"y":[5366.5508127301191,7029.7339531911666,7029.7339531911666,5366.5508127301191,5366.5508127301191],"text":"","type":"scatter","mode":"lines","line":{"width":1.2598425196850394,"color":"rgba(0,0,0,1)","dash":"solid"},"fill":"toself","fillcolor":"rgba(191,191,191,1)","hoveron":"fills","showlegend":false,"xaxis":"x","yaxis":"y2","hoverinfo":"text","frame":null},{"x":[3468,3468,3560,3560,3468],"y":[-996.57362189958121,666.60951856146585,666.60951856146585,-996.57362189958121,-996.57362189958121],"text":"","type":"scatter","mode":"lines","line":{"width":1.2598425196850394,"color":"rgba(0,0,0,1)","dash":"solid"},"fill":"toself","fillcolor":"rgba(191,191,191,1)","hoveron":"fills","showlegend":false,"xaxis":"x","yaxis":"y3","hoverinfo":"text","frame":null},{"x":[3468,3468,3560,3560,3468],"y":[-1223.2818850805559,439.90125538049119,439.90125538049119,-1223.2818850805559,-1223.2818850805559],"text":"","type":"scatter","mode":"lines","line":{"width":1.2598425196850394,"color":"rgba(0,0,0,1)","dash":"solid"},"fill":"toself","fillcolor":"rgba(191,191,191,1)","hoveron":"fills","showlegend":false,"xaxis":"x","yaxis":"y4","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":55.452054794520549,"r":18.99543378995434,"b":40.182648401826491,"l":34.337899543379002},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"title":{"text":"STL decomposition","font":{"color":"rgba(0,0,0,1)","family":"","size":17.534246575342465},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[3025.0999999999999,12768.9],"tickmode":"array","ticktext":["1980 Q1","1985 Q1","1990 Q1","1995 Q1","2000 Q1"],"tickvals":[3652,5479,7305,9131,10957],"categoryorder":"array","categoryarray":["1980 Q1","1985 Q1","1990 Q1","1995 Q1","2000 Q1"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"y4","title":"","hoverformat":".2f"},"annotations":[{"text":"Quarter","x":0.5,"y":0,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":14.611872146118724},"xref":"paper","yref":"paper","textangle":-0,"xanchor":"center","yanchor":"top","annotationType":"axis","yshift":-21.917808219178088},{"text":"Tobacco","x":1,"y":0.87785388127853881,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":90,"xanchor":"left","yanchor":"middle"},{"text":"trend","x":1,"y":0.625,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":90,"xanchor":"left","yanchor":"middle"},{"text":"season_year","x":1,"y":0.375,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":90,"xanchor":"left","yanchor":"middle"},{"text":"remainder","x":1,"y":0.12214611872146118,"showarrow":false,"ax":0,"ay":0,"font":{"color":"rgba(26,26,26,1)","family":"","size":11.68949771689498},"xref":"paper","yref":"paper","textangle":90,"xanchor":"left","yanchor":"middle"}],"yaxis":{"domain":[0.75570776255707761,1],"automargin":true,"type":"linear","autorange":false,"range":[3623.25,8457.75],"tickmode":"array","ticktext":["4000","5000","6000","7000","8000"],"tickvals":[4000,5000,6000,7000,8000],"categoryorder":"array","categoryarray":["4000","5000","6000","7000","8000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.75570776255707761,"y1":1},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"transparent","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","y0":0.75570776255707761,"y1":1,"x0":0,"x1":23.37899543378996,"xanchor":1,"xsizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.50570776255707761,"y1":0.74429223744292239},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"transparent","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","y0":0.50570776255707761,"y1":0.74429223744292239,"x0":0,"x1":23.37899543378996,"xanchor":1,"xsizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0.25570776255707761,"y1":0.49429223744292239},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"transparent","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","y0":0.25570776255707761,"y1":0.49429223744292239,"x0":0,"x1":23.37899543378996,"xanchor":1,"xsizemode":"pixel"},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":0.24429223744292236},{"type":"rect","fillcolor":"rgba(217,217,217,1)","line":{"color":"transparent","width":0.66417600664176002,"linetype":"solid"},"yref":"paper","xref":"paper","y0":0,"y1":0.24429223744292236,"x0":0,"x1":23.37899543378996,"xanchor":1,"xsizemode":"pixel"}],"yaxis2":{"type":"linear","autorange":false,"range":[4442.1180631719953,7954.1667027492895],"tickmode":"array","ticktext":["5000","6000","7000"],"tickvals":[5000,6000,7000],"categoryorder":"array","categoryarray":["5000","6000","7000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.50570776255707761,0.74429223744292239],"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis3":{"type":"linear","autorange":false,"range":[-1079.7327789226338,749.76867558451818],"tickmode":"array","ticktext":["-1000","-500","0","500"],"tickvals":[-1000,-500,0,500],"categoryorder":"array","categoryarray":["-1000","-500","0","500"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0.25570776255707761,0.49429223744292239],"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"yaxis4":{"type":"linear","autorange":false,"range":[-1902.0458391120746,1118.66520941201],"tickmode":"array","ticktext":["-1000","0","1000"],"tickvals":[-1000,0,1000],"categoryorder":"array","categoryarray":["-1000","0","1000"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.6529680365296811,"tickwidth":0.66417600664176002,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.68949771689498},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"domain":[0,0.24429223744292236],"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176002,"zeroline":false,"anchor":"x","title":"","hoverformat":".2f"},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.8897637795275593,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.68949771689498}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"353c5503aa1":{"x":{},"y":{},"type":"scatter"},"353c73a55722":{"ymin":{},"ymax":{},"xmin":{},"xmax":{}}},"cur_data":"353c5503aa1","visdat":{"353c5503aa1":["function (y) ","x"],"353c73a55722":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>tobacco_train <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="fu">log</span>(Tobacco)) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Log of tabaco"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lm<span class="ot">&lt;-</span>tobacco_train<span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">features</span>(Tobacco, <span class="at">features=</span>guerrero)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>tobacco_train <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a> <span class="fu">autoplot</span>(<span class="fu">box_cox</span>(Tobacco, <span class="at">lambda=</span>lm))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>lm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  lambda_guerrero
+            &lt;dbl&gt;
+1           0.799</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rp<span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(Tobacco)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 24 rows containing missing values (`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-6-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>tobacco_train<span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gg_season</span>(Tobacco)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dcmp <span class="ot">&lt;-</span> tobacco_train <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">STL</span>((<span class="fu">box_cox</span>(Tobacco, <span class="at">lambda=</span>lm)), <span class="at">robust =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>dcmp <span class="sc">|&gt;</span> </span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">components</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>lm<span class="ot">&lt;-</span>tobacco_train<span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">features</span>(Tobacco, <span class="at">features=</span>guerrero)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>tobaco_fit <span class="ot">&lt;-</span> tobacco_train <span class="sc">|&gt;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Drift =</span> <span class="fu">RW</span>(Tobacco <span class="sc">~</span> <span class="fu">drift</span>()),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Drift_bc =</span> <span class="fu">RW</span>(<span class="fu">box_cox</span>(Tobacco, <span class="at">lambda =</span> lm) <span class="sc">~</span> <span class="fu">drift</span>()),</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">ETS_mam =</span> <span class="fu">ETS</span>(<span class="fu">box_cox</span>(Tobacco, <span class="at">lambda =</span> lm) <span class="sc">~</span> <span class="fu">error</span>(<span class="st">"M"</span>) <span class="sc">+</span> <span class="fu">trend</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">season</span>(<span class="st">"M"</span>), <span class="at">opt_crit =</span> <span class="st">"lik"</span>),</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ETS_AAA =</span> <span class="fu">ETS</span>(<span class="fu">box_cox</span>(Tobacco, <span class="at">lambda =</span> lm) <span class="sc">~</span> <span class="fu">error</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">trend</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">season</span>(<span class="st">"A"</span>), <span class="at">opt_crit =</span> <span class="st">"lik"</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>tobaco_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A mable: 1 x 4
+          Drift      Drift_bc      ETS_mam      ETS_AAA
+        &lt;model&gt;       &lt;model&gt;      &lt;model&gt;      &lt;model&gt;
+1 &lt;RW w/ drift&gt; &lt;RW w/ drift&gt; &lt;ETS(M,A,M)&gt; &lt;ETS(A,A,A)&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tobaco_fit <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ETS_mam) <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">report</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: Tobacco 
+Model: ETS(M,A,M) 
+Transformation: box_cox(Tobacco, lambda = lm) 
+  Smoothing parameters:
+    alpha = 0.2332392 
+    beta  = 0.003005908 
+    gamma = 0.0001000907 
+
+  Initial states:
+     l[0]      b[0]      s[0]    s[-1]    s[-2]     s[-3]
+ 1605.267 -1.530239 0.9948287 1.060545 1.026344 0.9182822
+
+  sigma^2:  0.0038
+
+     AIC     AICc      BIC 
+1292.599 1294.692 1315.678 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(tobaco_fit) <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(MAPE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 10
+  .model   .type           ME  RMSE   MAE    MPE  MAPE  MASE RMSSE    ACF1
+  &lt;chr&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1 ETS_mam  Training -5.50e+ 1  438.  333. -1.35   5.75 0.825 0.842 -0.0408
+2 ETS_AAA  Training  5.00e+ 0  432.  332. -0.410  5.77 0.823 0.830  0.0579
+3 Drift_bc Training  3.88e- 1  808.  669. -0.937 11.2  1.66  1.55  -0.302 
+4 Drift    Training  1.92e-14  809.  670. -0.942 11.2  1.66  1.55  -0.302 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>tobaco_aug <span class="ot">&lt;-</span> tobaco_fit <span class="sc">|&gt;</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">augment</span>()</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>tobaco_aug</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 384 x 6 [1Q]
+# Key:       .model [4]
+   .model Quarter Tobacco .fitted  .resid  .innov
+   &lt;chr&gt;    &lt;qtr&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Drift  1980 Q1    6794     NA     NA      NA  
+ 2 Drift  1980 Q2    8168   6770.  1398.   1398. 
+ 3 Drift  1980 Q3    8097   8144.   -47.1   -47.1
+ 4 Drift  1980 Q4    7820   8073.  -253.   -253. 
+ 5 Drift  1981 Q1    6437   7796. -1359.  -1359. 
+ 6 Drift  1981 Q2    7995   6413.  1582.   1582. 
+ 7 Drift  1981 Q3    8238   7971.   267.    267. 
+ 8 Drift  1981 Q4    8026   8214.  -188.   -188. 
+ 9 Drift  1982 Q1    6697   8002. -1305.  -1305. 
+10 Drift  1982 Q2    7749   6673.  1076.   1076. 
+# ℹ 374 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tobacco_train <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(Tobacco, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(tobaco_aug, .fitted, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>.model, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>tobacco_fc <span class="ot">&lt;-</span> tobaco_fit <span class="sc">|&gt;</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h =</span> <span class="dv">10</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>tobacco_fc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A fable: 40 x 4 [1Q]
+# Key:     .model [4]
+   .model Quarter          Tobacco .mean
+   &lt;chr&gt;    &lt;qtr&gt;           &lt;dist&gt; &lt;dbl&gt;
+ 1 Drift  2004 Q1  N(4502, 667725) 4502.
+ 2 Drift  2004 Q2 N(4478, 1349361) 4478.
+ 3 Drift  2004 Q3   N(4454, 2e+06) 4454.
+ 4 Drift  2004 Q4 N(4431, 2754365) 4431.
+ 5 Drift  2005 Q1 N(4407, 3477733) 4407.
+ 6 Drift  2005 Q2 N(4383, 4215013) 4383.
+ 7 Drift  2005 Q3   N(4359, 5e+06) 4359.
+ 8 Drift  2005 Q4 N(4335, 5731304) 4335.
+ 9 Drift  2006 Q1 N(4311, 6510317) 4311.
+10 Drift  2006 Q2 N(4287, 7303240) 4287.
+# ℹ 30 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tobacco_fc <span class="sc">|&gt;</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(rp, <span class="at">level =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 24 rows containing missing values (`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>tobacco_fc <span class="sc">|&gt;</span> </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(rp <span class="sc">|&gt;</span> <span class="fu">filter_index</span>(<span class="st">"1980 Q1"</span> <span class="sc">~</span> .), <span class="at">level =</span> <span class="cn">NULL</span>, <span class="at">size =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 24 rows containing missing values (`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>tobacco_fc <span class="sc">|&gt;</span> </span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(rp <span class="sc">|&gt;</span> <span class="fu">filter_index</span>(<span class="st">"1980 Q1"</span> <span class="sc">~</span> .), <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> .model, <span class="at">ncol =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 24 rows containing missing values (`geom_line()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-13-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>tobacco_fc <span class="sc">|&gt;</span> </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">accuracy</span>(rp) <span class="sc">|&gt;</span> </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(MAPE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 10
+  .model   .type      ME  RMSE   MAE    MPE  MAPE  MASE RMSSE  ACF1
+  &lt;chr&gt;    &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 ETS_AAA  Test   71.9    245.  234.  1.00   5.08 0.580 0.470  -0.5
+2 ETS_mam  Test   -0.840  225.  225. -0.613  5.08 0.559 0.433  -0.5
+3 Drift_bc Test  -11.2    531.  531. -1.65  12.0  1.32  1.02   -0.5
+4 Drift    Test   10.3    539.  538. -1.19  12.1  1.34  1.04   -0.5</code></pre>
+</div>
+</div>
+</section>
+<section id="serie-sin-estacionalidad-pero-con-tendencia" class="level2">
+<h2 class="anchored" data-anchor-id="serie-sin-estacionalidad-pero-con-tendencia">Serie sin estacionalidad pero con tendencia:</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>global_economy</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tsibble: 15,150 x 9 [1Y]
+# Key:       Country [263]
+   Country     Code   Year         GDP Growth   CPI Imports Exports Population
+   &lt;fct&gt;       &lt;fct&gt; &lt;dbl&gt;       &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;      &lt;dbl&gt;
+ 1 Afghanistan AFG    1960  537777811.     NA    NA    7.02    4.13    8996351
+ 2 Afghanistan AFG    1961  548888896.     NA    NA    8.10    4.45    9166764
+ 3 Afghanistan AFG    1962  546666678.     NA    NA    9.35    4.88    9345868
+ 4 Afghanistan AFG    1963  751111191.     NA    NA   16.9     9.17    9533954
+ 5 Afghanistan AFG    1964  800000044.     NA    NA   18.1     8.89    9731361
+ 6 Afghanistan AFG    1965 1006666638.     NA    NA   21.4    11.3     9938414
+ 7 Afghanistan AFG    1966 1399999967.     NA    NA   18.6     8.57   10152331
+ 8 Afghanistan AFG    1967 1673333418.     NA    NA   14.2     6.77   10372630
+ 9 Afghanistan AFG    1968 1373333367.     NA    NA   15.2     8.90   10604346
+10 Afghanistan AFG    1969 1408888922.     NA    NA   15.0    10.1    10854428
+# ℹ 15,140 more rows</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>mx_economy <span class="ot">&lt;-</span> global_economy <span class="sc">%&gt;%</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Country <span class="sc">==</span> <span class="st">"Mexico"</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>mx_economy <span class="ot">&lt;-</span> <span class="fu">subset</span>(mx_economy, <span class="at">select =</span> <span class="sc">-</span>Country)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>mx_economy <span class="sc">%&gt;%</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(Imports) <span class="sc">+</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Imports"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Year"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>ge_mx <span class="ot">&lt;-</span> mx_economy <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">&gt;=</span> <span class="dv">1960</span>)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>ge_train <span class="ot">&lt;-</span> ge_mx <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Year <span class="sc">&lt;=</span> <span class="dv">2005</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>ge_train <span class="sc">%&gt;%</span> <span class="fu">autoplot</span>(Imports)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ge_train <span class="sc">|&gt;</span> </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(<span class="at">stl =</span> <span class="fu">STL</span>(Imports, <span class="at">robust =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">components</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Transformación boxcox:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>bx_mx<span class="ot">&lt;-</span>ge_train<span class="sc">|&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">features</span>(Imports, <span class="at">features=</span>guerrero)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>bx_mx</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  lambda_guerrero
+            &lt;dbl&gt;
+1          -0.900</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>ge_train <span class="sc">|&gt;</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">autoplot</span>(<span class="fu">box_cox</span>(Imports, <span class="at">lambda=</span>bx_mx))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Descomposición de la serie desestacionalizada:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>dcmp_gemx <span class="ot">&lt;-</span> ge_train <span class="sc">|&gt;</span> </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">STL</span>((<span class="fu">box_cox</span>(Imports, <span class="at">lambda=</span>bx_mx)), <span class="at">robust =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>dcmp_gemx <span class="sc">|&gt;</span> </span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">components</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Suavización exp. simple:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>ge_fit <span class="ot">&lt;-</span> ge_train <span class="sc">|&gt;</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Drift =</span> <span class="fu">RW</span>(Imports <span class="sc">~</span> <span class="fu">drift</span>()),</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Drift_bc =</span> <span class="fu">RW</span>(<span class="fu">box_cox</span>(Imports, <span class="at">lambda =</span> bx_mx) <span class="sc">~</span> <span class="fu">drift</span>()),</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ETS_mam =</span> <span class="fu">ETS</span>(<span class="fu">box_cox</span>(Imports, <span class="at">lambda =</span> bx_mx) <span class="sc">~</span> <span class="fu">error</span>(<span class="st">"M"</span>) <span class="sc">+</span> <span class="fu">trend</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">season</span>(<span class="st">"M"</span>), <span class="at">opt_crit =</span> <span class="st">"lik"</span>),</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">ETS_AAA =</span> <span class="fu">ETS</span>(<span class="fu">box_cox</span>(Imports, <span class="at">lambda =</span> bx_mx) <span class="sc">~</span> <span class="fu">error</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">trend</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">season</span>(<span class="st">"A"</span>), <span class="at">opt_crit =</span> <span class="st">"lik"</span>)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 1 error encountered for ETS_mam
+[1] A seasonal ETS model cannot be used for this data.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 1 error encountered for ETS_AAA
+[1] A seasonal ETS model cannot be used for this data.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>ge_fit <span class="ot">&lt;-</span> ge_train <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Mean =</span> <span class="fu">MEAN</span>(Imports),</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Naïve</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">NAIVE</span>(Imports),</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Drift =</span> <span class="fu">RW</span>(Imports <span class="sc">~</span> <span class="fu">drift</span>())</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>ge_fc <span class="ot">&lt;-</span> ge_fit <span class="sc">%&gt;%</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h =</span> <span class="dv">5</span>)</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>ge_fc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A fable: 15 x 4 [1Y]
+# Key:     .model [3]
+   .model  Year    Imports .mean
+   &lt;chr&gt;  &lt;dbl&gt;     &lt;dist&gt; &lt;dbl&gt;
+ 1 Mean    2006  N(15, 50)  15.3
+ 2 Mean    2007  N(15, 50)  15.3
+ 3 Mean    2008  N(15, 50)  15.3
+ 4 Mean    2009  N(15, 50)  15.3
+ 5 Mean    2010  N(15, 50)  15.3
+ 6 Naïve   2006 N(32, 3.4)  32.0
+ 7 Naïve   2007 N(32, 6.8)  32.0
+ 8 Naïve   2008  N(32, 10)  32.0
+ 9 Naïve   2009  N(32, 14)  32.0
+10 Naïve   2010  N(32, 17)  32.0
+11 Drift   2006 N(32, 3.3)  32.4
+12 Drift   2007 N(33, 6.8)  32.9
+13 Drift   2008  N(33, 10)  33.3
+14 Drift   2009  N(34, 14)  33.8
+15 Drift   2010  N(34, 18)  34.2</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>ge_fc <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="fu">filter</span>(mx_economy, Year <span class="sc">&gt;=</span> <span class="dv">1960</span>), <span class="at">level =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Megalitres"</span>) <span class="sc">+</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Forecasts for quarterly beer production"</span>) <span class="sc">+</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Tendencia lineal:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> mx_economy <span class="sc">%&gt;%</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(<span class="at">AAN   =</span> <span class="fu">ETS</span>(Imports <span class="sc">~</span> <span class="fu">error</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">trend</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">season</span>(<span class="st">"N"</span>)),</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">Drift =</span> <span class="fu">RW</span>(Imports <span class="sc">~</span> <span class="fu">drift</span>()))</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>fc <span class="ot">&lt;-</span> fit <span class="sc">%&gt;%</span> <span class="fu">forecast</span>(<span class="at">h =</span> <span class="dv">5</span>)</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>fc <span class="sc">%&gt;%</span> </span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(mx_economy <span class="sc">%&gt;%</span> <span class="fu">filter_index</span>(<span class="st">"2000"</span><span class="sc">~</span>.), <span class="at">level =</span> <span class="cn">NULL</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>fit <span class="sc">|&gt;</span> </span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(AAN) <span class="sc">|&gt;</span> </span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">report</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: Imports 
+Model: ETS(A,A,N) 
+  Smoothing parameters:
+    alpha = 0.9998996 
+    beta  = 0.0001000104 
+
+  Initial states:
+     l[0]      b[0]
+ 9.965383 0.5225019
+
+  sigma^2:  3.3735
+
+     AIC     AICc      BIC 
+311.8856 313.0394 322.1878 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(fit) <span class="sc">|&gt;</span> </span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(MAPE)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 10
+  .model .type           ME  RMSE   MAE   MPE  MAPE  MASE RMSSE   ACF1
+  &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 Drift  Training  5.92e-16  1.78  1.24 -1.70  7.35 0.976 0.964 0.0765
+2 AAN    Training -9.69e- 3  1.77  1.25 -1.70  7.46 0.978 0.959 0.0658</code></pre>
+</div>
+</div>
+<p><em>EXTRA</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>fit <span class="sc">%&gt;%</span> </span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glance</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 9
+  .model sigma2 log_lik   AIC  AICc   BIC   MSE  AMSE   MAE
+  &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+1 AAN      3.37   -151.  312.  313.  322.  3.14  6.62  1.25
+2 Drift    3.23     NA    NA    NA    NA  NA    NA    NA   </code></pre>
+</div>
+</div>
+<p>Tendencia amortiguada, extra también:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>mx_economy <span class="sc">%&gt;%</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">model</span>(</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Holt</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">ETS</span>(Imports <span class="sc">~</span> <span class="fu">error</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">trend</span>(<span class="st">"A"</span>)),</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Damped Holt</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">ETS</span>(Imports <span class="sc">~</span> <span class="fu">error</span>(<span class="st">"A"</span>) <span class="sc">+</span> <span class="fu">trend</span>(<span class="st">"Ad"</span>))</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">forecast</span>(<span class="at">h =</span> <span class="st">"10 years"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(mx_economy, <span class="at">level =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Forecasts from Holt's method"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Population of Australia (millions)"</span>) <span class="sc">+</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour =</span> <span class="fu">guide_legend</span>(<span class="at">title =</span> <span class="st">"Forecast"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Errores del pronóstico:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(ge_fc, ge_mx)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 10
+  .model .type    ME  RMSE   MAE    MPE  MAPE  MASE RMSSE   ACF1
+  &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 Drift  Test  -3.74  3.79  3.74 -12.7  12.7   3.12  2.06 -0.582
+2 Mean   Test  14.3  14.3  14.3   48.3  48.3  11.9   7.77 -0.372
+3 Naïve  Test  -2.38  2.54  2.38  -8.15  8.15  1.99  1.38 -0.372</code></pre>
+</div>
+</div>
+<p>Se puede observar que el modelo que tiene menor error de predicción es Naive (RMSE, MAE, MAPE)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>ge_fc <span class="sc">%&gt;%</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(.model <span class="sc">==</span> <span class="st">"Naïve"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>(<span class="fu">filter</span>(mx_economy, Year <span class="sc">&gt;=</span> <span class="dv">1960</span>)) <span class="sc">+</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Megalitres"</span>) <span class="sc">+</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Forecast for quarterly beer production using the Damped Holt Winters method"</span>) <span class="sc">+</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Tarea02_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

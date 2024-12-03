@@ -1,0 +1,469 @@
+---
+title: "Modelos ARIMA"
+author: "Pablo Benavides-Herrera"
+date: "2020-04-20"
+output:
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: cerulean
+    highlight: tango
+runtime: shiny
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r pkgs, message=FALSE}
+library(tidyverse)
+library(fpp3)
+library(patchwork)
+```
+
+```{r ts plots stationarity, echo=FALSE, fig.width=10}
+google_stock <- gafa_stock %>%
+  filter(Symbol == "GOOG") %>%
+  mutate(day = row_number()) %>%
+  update_tsibble(index = day, regular = TRUE) %>% 
+  mutate(diff_close = difference(Close))
+
+google_2015 <- google_stock %>% filter(year(Date) == 2015)
+p1 <- google_2015 %>% ggplot(aes(x = Date, y = Close)) + geom_line()+
+  ggtitle("(a) - Google stock")
+p2 <- google_2015 %>% ggplot(aes(x = Date, y = diff_close)) + geom_line() + ylab("difference(Close)") + ggtitle("(b) - Cambios diarios en Google")
+
+pigs <- aus_livestock %>% 
+  filter(Animal == "Pigs",
+         State == "Victoria")
+p3 <- pigs %>% ggplot(aes(x = Month, y = Count)) + geom_line() +
+  ggtitle("(c) - Producción de cerdos")
+
+eggs <- as_tsibble(fma::eggs)
+p4 <- eggs %>% ggplot(aes(x = index, y = value)) + geom_line() +
+  ggtitle("(d) - Precio de los huevos")
+
+lince <- pelt %>% 
+  select(Year, Lynx)
+p5 <- lince %>% ggplot(aes(x = Year, y = Lynx)) + geom_line() +
+  ggtitle("(e) - Pieles de lince")
+
+recent_production <- aus_production %>% filter(year(Quarter) >= 1992 & year(Quarter) <= 1995 )
+p6 <- recent_production %>% ggplot(aes(x = Quarter, y = Beer)) + geom_line() +
+  ggtitle("(f) - Producción de cerveza")
+  
+(p1 | p2 | p3) / (p4 | p5 | p6)
+```
+
+```{r ACF Google v diff Google, fig.width= 10, fig.height=3}
+google_2015 %>% ACF(Close) %>% autoplot() | 
+  google_2015 %>% ACF(diff_close) %>% autoplot()
+```
+
+```{r diff_close ljung-box}
+google_2015 %>%
+  features(diff_close, ljung_box, lag = 10)
+```
+
+```{r differences}
+PBS %>%
+  filter(ATC2 == "H02") %>%
+  summarise(Cost = sum(Cost)/1e6) %>%
+  transmute(
+    `Sales ($million)` = Cost,
+    `Log sales` = log(Cost),
+    `Annual change in log sales` = difference(log(Cost), 12),
+    `Doubly differenced log sales` = log(Cost) %>% difference(12) %>% difference(1)
+  ) %>%
+  gather("Type", "Sales", !!!syms(measured_vars(.)), factor_key = TRUE) %>%
+  ggplot(aes(x = Month, y = Sales)) +
+  geom_line() +
+  facet_grid(vars(Type), scales = "free_y") +
+  labs(title = "Corticosteroid drug sales", x = "Year", y = NULL)
+```
+
+```{r shiny-differences, echo=FALSE}
+selectInput("diff_order", label = "Diferenciación:",
+              choices = c("Serie en niveles", "Dif. estacionales", "Dif. estacionales + primeras dif.", "Primeras dif.","Segundas dif."), selected = "Serie en niveles")
+
+renderPlot({
+gg_shiny <-   PBS %>%
+  filter(ATC2 == "H02") %>%
+  summarise(Cost = sum(Cost)/1e6) %>%
+  mutate(dif_order = case_when(
+      input$diff_order == "Serie en niveles" ~ Cost,
+      input$diff_order == "Dif. estacionales" ~ difference(Cost, 12),
+      input$diff_order == "Dif. estacionales + primeras dif." ~ difference(difference(Cost, 12),1),
+      input$diff_order == "Primeras dif." ~ difference(Cost, 1),
+      input$diff_order == "Segundas dif." ~ difference(Cost, 2)
+    ))
+    
+  gg_shiny %>% autoplot(dif_order) + ggtitle(input$diff_order) + ylab("")
+})
+
+
+```
+
+```{r kpss google}
+google_2015 %>%
+  features(Close, unitroot_kpss)
+```
+
+```{r kpss diff google}
+google_2015 %>%
+  features(diff_close, unitroot_kpss)
+```
+
+```{r unitroot_ndiffs}
+google_2015 %>%
+  features(Close, unitroot_ndiffs)
+```
+
+```{r aus_retail plot}
+aus_total_retail <- aus_retail %>%
+  summarise(Turnover = sum(Turnover))
+autoplot(aus_total_retail)
+```
+
+```{r aus_retail log plot}
+aus_total_retail <- aus_total_retail %>%
+  mutate(log_turnover = log(Turnover)) 
+
+aus_total_retail %>% autoplot(log_turnover)
+```
+
+```{r nsdiffs}
+aus_total_retail %>%
+  features(log_turnover, unitroot_nsdiffs)
+```
+
+```{r ndiffs}
+aus_total_retail %>%
+  mutate(log_turnover = difference(log(Turnover), 12)) %>%
+  features(log_turnover, unitroot_ndiffs)
+```
+
+```{r AR 1 2, echo=FALSE}
+ar1 <- arima.sim(list(order=c(1,0,0), ar= 0.8),n=100)
+ar2 <- arima.sim(list(order=c(2,0,0), ar= c(1.3, -0.7)),n=100)
+autoplot(ar1) + ggtitle("AR(1)")  | autoplot(ar2) + ggtitle("AR(2)")
+
+```
+
+```{r MA 1 2, echo=FALSE}
+ma1 <- arima.sim(list(order=c(0,0,1), ma= 0.8),n=100)
+ma2 <- arima.sim(list(order=c(0,0,2), ma= c(1.3, -0.7)),n=100)
+autoplot(ma1) + ggtitle("MA(1)")  | autoplot(ma2) + ggtitle("MA(2)")
+```
+
+```{r us_change, message=FALSE}
+# us_change <- read_csv("us_change.csv") %>%
+#   mutate(Time = yearquarter(Time)) %>%
+#   as_tsibble(index = Time)
+
+us_change %>% autoplot(Consumption) +
+  labs(x = "Year", y = "Quarterly percentage change", title = "US consumption")
+```
+
+```{r}
+us_change %>% 
+  features(Consumption, unitroot_ndiffs)
+```
+
+```{r us_change pacf}
+us_change %>% PACF(Consumption) %>% autoplot()
+```
+
+```{r us_change ARIMA}
+fit <- us_change %>%
+  model(ARIMA(Consumption ~ pdq(3,0,0) + PDQ(0,0,0)))
+report(fit)
+```
+
+```{r us_change auto ARIMA}
+fit2 <- us_change %>%
+  model(ARIMA(Consumption ~ PDQ(0,0,0)))
+report(fit2)
+```
+
+```{r us_change auto ARIMA long}
+fit3 <- us_change %>%
+  model(ARIMA(Consumption ~ PDQ(0,0,0),
+              stepwise = FALSE, approximation = FALSE))
+report(fit3)
+```
+
+```{r us_change auto ARIMA orders}
+fit4 <- us_change %>%
+  model(ARIMA(Consumption ~ pdq(1:3, 0, 0:2) + PDQ(0,0,0)))
+report(fit4)
+```
+
+```{r shiny-us_change, echo=FALSE}
+inputPanel(
+  numericInput("ar_p",label = "p",value = 0, min = 0, max = 5, step = 1),
+numericInput("i_d",label = "d",value = 0, min = 0, max = 2, step = 1),
+numericInput("ma_q",label = "q",value = 0, min = 0, max = 4, step = 1),
+actionButton("go","Estimar modelo ARIMA")
+)
+
+modelo <- eventReactive(input$go, {
+  us_change %>% 
+    model(ARIMA(Consumption ~ pdq(input$ar_p, input$i_d, input$ma_q) + PDQ(0,0,0)))
+})
+
+renderText({
+  paste("Estimación del modelo ARIMA(",input$ar_p, ",", input$i_d, ",", input$ma_q, ")", sep = "")
+})
+
+renderPrint({
+  report(modelo())
+})
+
+renderPlot({
+  modelo() %>% gg_tsresiduals() + ggtitle("Diagnóstico de residuos"
+  )
+})
+renderText({
+  "Prueba de Ljung-Box"
+})
+renderPrint({
+  modelo() %>% augment() %>% features(.innov, ljung_box, lag = 10)
+})
+
+```
+
+```{r box-jenkins ex plot}
+elec_equip <- as_tsibble(fpp2::elecequip)
+
+elec_dcmp <- elec_equip %>%
+  model(STL(value ~ season(window="periodic"))) %>%
+  components() %>%
+  select(-.model) %>%
+  as_tsibble()
+elec_dcmp %>%
+  autoplot(season_adjust)
+```
+
+```{r box-jenkins ex diff}
+elec_dcmp %>%
+  gg_tsdisplay(difference(season_adjust), plot_type='partial')
+```
+
+```{r box-jenkins ex fit, message=FALSE}
+fit <- elec_dcmp %>%
+  model(
+    arima310 = ARIMA(season_adjust ~ pdq(3,1,0) + PDQ(0,0,0)),
+    arima410 = ARIMA(season_adjust ~ pdq(4,1,0) + PDQ(0,0,0)),
+    arima210 = ARIMA(season_adjust ~ pdq(2,1,0) + PDQ(0,0,0)),
+    arima311 = ARIMA(season_adjust ~ pdq(3,1,1) + PDQ(0,0,0)),
+    arima312 = ARIMA(season_adjust ~ pdq(3,1,2) + PDQ(0,0,0)),
+    arima212 = ARIMA(season_adjust ~ pdq(2,1,2) + PDQ(0,0,0))
+    
+  )
+
+glance(fit) %>% 
+  arrange(AICc)
+```
+
+```{r box-jenkins ex tsresiduals}
+fit %>% select(arima311) %>% gg_tsresiduals()
+```
+
+```{r box-jenkins ex ljung-box}
+fit %>% 
+  select(arima311) %>% 
+  augment() %>%
+  features(.innov, ljung_box, lag = 24, dof = 4)
+```
+
+```{r}
+library(forecast)
+
+# Assuming 'elec_dcmp' is a multivariate time series data frame
+# Replace 'your_time_series_column' with the actual name of your time series column
+your_time_series <- elec_dcmp$your_time_series_column
+
+# Check if there are observations in your time series
+if (length(your_time_series) > 0) {
+  # Fit an ARIMA model
+  arima_model <- arima(elec_dcmp$your_time_series_column, order=c(3,1,1))
+
+# Generate forecasts
+  forecast_data <- forecast(arima_model)
+
+# Plot the forecasts with adjusted margins
+  autoplot(forecast_data, data = elec_dcmp) +
+  theme(plot.margin = margin(1, 1, 1, 1, "cm"))  # Adjust the margins as needed
+} else {
+  print("Error: Your time series data is empty.")
+}
+
+
+
+
+```
+
+
+```{r SARIMA eu retail plot}
+eu_retail <- as_tsibble(fpp2::euretail)
+eu_retail %>% autoplot(value) + ylab("Retail index") + xlab("Year")
+```
+
+```{r SARIMA eu retail sdiff, warning=FALSE}
+eu_retail %>% gg_tsdisplay(difference(value, 4), plot_type='partial')
+```
+
+```{r SARIMA eu retail diff, warning=FALSE}
+eu_retail %>% gg_tsdisplay(value %>% difference(4) %>% difference(),
+  plot_type='partial')
+eu_retail %>%  
+  features(value %>%  difference(4) %>% difference(), unitroot_kpss)
+```
+
+```{r SARIMA eu retail fit1}
+fit <- eu_retail %>%
+  model(arima = ARIMA(value ~ pdq(0,1,1) + PDQ(0,1,1)))
+fit %>% gg_tsresiduals()
+```
+
+```{r SARIMA eu retail fit2}
+fit <- eu_retail %>%
+  model(arima = ARIMA(value ~ pdq(0,1,3) + PDQ(0,1,1)))
+fit %>% gg_tsresiduals()
+report(fit)
+fit %>% augment() %>%  features(.innov, ljung_box, lag = 8, dof = 4)
+```
+
+```{r SARIMA eu retail forecast}
+library(forecast)
+
+# Assuming 'eu_retail' is your time series data
+
+# Fit an ARIMA model to the time series
+arima_model <- auto.arima(eu_retail, seasonal = TRUE)  # Using auto.arima for automatic model selection
+
+# Generate forecasts for a horizon of 12 periods
+forecast_data <- forecast(arima_model, h=12)
+
+# Plot the forecasts using autoplot
+autoplot(forecast_data)
+
+
+
+```
+
+```{r SARIMA eu retail automatic}
+eu_retail %>%
+  model(ARIMA(value))
+```
+
+```{r HO2 data}
+h02 <- PBS %>%
+  filter(ATC2 == "H02") %>%
+  summarise(Cost = sum(Cost)/1e6)
+```
+
+```{r SARIMA HO2 plot}
+h02 %>%
+  mutate(log(Cost)) %>%
+  gather() %>%
+  ggplot(aes(x = Month, y = value)) +
+  geom_line() +
+  facet_grid(key ~ ., scales = "free_y") +
+  xlab("Year") + ylab("") +
+  ggtitle("Cortecosteroid drug scripts (H02)")
+```
+
+```{r SARIMA HO2 sdiff, warning=FALSE}
+h02 %>% gg_tsdisplay(difference(log(Cost), 12), plot_type='partial', lag_max = 48)
+
+h02 %>% gg_tsdisplay(log(Cost) %>% difference(12) %>% difference(), plot_type='partial', lag_max = 48)
+```
+
+```{r shiny-eu_retail, echo=FALSE}
+h02_train <- h02 %>% 
+  filter(year(Month) <= 2005)
+
+inputPanel(
+  fluidRow(
+  numericInput("ar_p2",label = "p",value = 0, min = 0, max = 5, step = 1),
+  numericInput("i_d2",label = "d",value = 0, min = 0, max = 1, step = 1),
+  numericInput("ma_q2",label = "q",value = 0, min = 0, max = 5, step = 1)
+), fluidRow(
+  numericInput("ar_P",label = "P",value = 0, min = 0, max = 2, step = 1),
+  numericInput("i_D",label = "D",value = 0, min = 0, max = 1, step = 1),
+  numericInput("ma_Q",label = "Q",value = 0, min = 0, max = 2, step = 1)
+),
+
+  checkboxInput("log_tr",
+                label = "Utilizar transformación logarítmica",
+                value = TRUE),
+
+  actionButton("go2","Estimar modelo ARIMA")
+)
+
+modelo2 <- eventReactive(input$go2, {
+  if (input$log_tr){
+   h02_train %>% 
+    model(ARIMA(log(Cost) ~ 0 + pdq(input$ar_p2, input$i_d2, input$ma_q2) + PDQ(input$ar_P, input$i_D, input$ma_Q)
+                )
+          )
+  }
+  else {
+    h02_train %>% 
+    model(ARIMA(Cost ~ 0 + pdq(input$ar_p2, input$i_d2, input$ma_q2) + PDQ(input$ar_P, input$i_D, input$ma_Q)
+                )
+          )
+  }
+})
+
+renderText({
+  paste("Estimación del modelo ARIMA(",input$ar_p2, ",", input$i_d2, ",", input$ma_q2, ")","(",input$ar_P, ",", input$i_D, ",", input$ma_Q,")_12", sep = "")
+})
+
+renderPrint({
+  report(modelo2())
+})
+
+renderPrint({
+  modelo2() %>% 
+    accuracy()
+})
+
+renderPlot({
+  modelo2() %>% gg_tsresiduals(lag_max = 36) + ggtitle("Diagnóstico de residuos"
+  )
+})
+
+renderText({
+  "Prueba de Ljung-Box"
+})
+
+renderPrint({
+  modelo2() %>% augment() %>% features(.innov, ljung_box, lag = 36, dof = nrow(tidy(modelo2()
+               )
+          )
+                                      )
+})
+
+renderText({
+  "Evaluación del desempeño del modelo"
+})
+
+renderPrint({
+  modelo2() %>% 
+    forecast(h = 30) %>% 
+    accuracy(h02)
+})
+
+renderText({
+  "Pronóstico"
+})
+
+renderPlot({
+  modelo2() %>%
+  forecast(h = 30) %>%
+  autoplot(h02) +
+    ylab("H02 sales (million scripts)") + xlab("Year")
+})
+```
